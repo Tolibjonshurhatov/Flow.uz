@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="./images/flow.jpgs">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Flow — Kunlik rejalashtiruvchi</title>
+<meta name="theme-color" content="#0A0A0F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+:root{
+  --bg:#0A0A0F;--bg2:#12121A;--bg3:#1A1A26;--bg4:#22223A;
+  --blue:#0A84FF;--blue2:#5AC8FA;
+  --white:#FFFFFF;--gray:#8E8EA0;--gray2:#2A2A3A;
+  --text:#F0F0FF;--text2:#A0A0C0;
+  --green:#30D158;--red:#FF453A;--orange:#FF9F0A;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;overflow:hidden;-webkit-user-select:none;user-select:none}
+
+/* ONBOARDING */
+#onboard{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;text-align:center;transition:opacity .4s}
+.ob-logo{font-size:64px;font-weight:800;letter-spacing:-3px;color:var(--blue);margin-bottom:6px}
+.ob-tag{font-size:15px;color:var(--gray);margin-bottom:52px}
+.ob-h{font-size:26px;font-weight:700;margin-bottom:10px;letter-spacing:-0.5px}
+.ob-p{font-size:14px;color:var(--text2);margin-bottom:32px;line-height:1.7}
+.ob-inp{width:100%;background:var(--bg3);border:1.5px solid var(--gray2);border-radius:14px;padding:15px 18px;font-size:16px;color:var(--text);outline:none;transition:border-color .2s;font-family:inherit;appearance:none;-webkit-appearance:none}
+.ob-inp:focus{border-color:var(--blue)}
+.ob-inp::placeholder{color:var(--gray)}
+.ob-btn{width:100%;margin-top:16px;background:var(--blue);color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;-webkit-appearance:none}
+.ob-btn:active{transform:scale(0.97);background:#0070d8}
+
+/* APP */
+#app{position:fixed;inset:0;display:none;flex-direction:column;background:var(--bg)}
+#app.on{display:flex}
+
+/* BACKGROUND WALL LOGO EFFECT */
+.bg-wall-logo {
+  position: fixed;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 85%;
+  max-width: 450px;
+  height: auto;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  filter: brightness(1.8) contrast(1.2) drop-shadow(1px 1px 2px rgba(255,255,255,0.15)) drop-shadow(-1px -1px 2px rgba(0,0,0,0.8));
+}
+
+/* TOP */
+#topbar{background:var(--bg);padding:calc(var(--safe-top) + 10px) 16px 0;flex-shrink:0;z-index:1}
+.gr-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.gr-name{font-size:16px;font-weight:600}
+.notif-btn{width:36px;height:36px;background:var(--bg3);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid var(--gray2);transition:all .15s;flex-shrink:0}
+.notif-btn:active{transform:scale(0.9)}
+.clock-wrap{text-align:center;padding-bottom:12px}
+.clk{font-size:66px;font-weight:200;letter-spacing:-2px;color:var(--white);line-height:1;display:inline-flex;align-items:flex-start}
+.clk-sec{font-size:28px;font-weight:200;color:var(--blue);margin-top:12px;margin-left:3px}
+.clk-colon{color:var(--gray2);animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.date-txt{font-size:13px;color:var(--gray);margin-top:2px;letter-spacing:.3px}
+
+/* PRAYER STRIP */
+.prayer-strip{background:var(--bg2);margin:0 0 0 0;border-radius:14px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border:1px solid #1A2A4A;margin-bottom:2px;position:relative;overflow:hidden;cursor:pointer}
+.prayer-strip::after{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--blue);border-radius:0 2px 2px 0}
+.ps-left .ps-lbl{font-size:10px;color:var(--blue2);font-weight:700;text-transform:uppercase;letter-spacing:.8px}
+.ps-left .ps-name{font-size:15px;font-weight:700;color:var(--white);margin-top:1px}
+.ps-left .ps-cnt{font-size:11px;color:var(--text2)}
+.ps-right{display:flex;gap:10px}
+.pmi{text-align:center}
+.pmi-l{font-size:9px;color:var(--gray);text-transform:uppercase;letter-spacing:.4px}
+.pmi-v{font-size:11px;font-weight:600;color:var(--text2);margin-top:1px}
+.pmi.cur .pmi-l,.pmi.cur .pmi-v{color:var(--blue)}
+
+/* NAV */
+#botnav{display:flex;background:var(--bg2);border-top:1px solid var(--gray2);padding:6px 0 calc(var(--safe-bot) + 6px);flex-shrink:0;z-index:1}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px;cursor:pointer;border:none;background:transparent;color:var(--gray);transition:color .15s;-webkit-appearance:none}
+.ni.on{color:var(--blue)}
+.ni svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ni span{font-size:9px;font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+.ni:active{transform:scale(0.85)}
+
+/* PAGES */
+#pages{flex:1;overflow:hidden;position:relative;min-height:0;z-index:1}
+.pg{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;opacity:0;pointer-events:none;transition:opacity .18s;scrollbar-width:none}
+.pg::-webkit-scrollbar{display:none}
+.pg.on{opacity:1;pointer-events:all}
+.pi{padding:10px 16px calc(24px + var(--safe-bot))}
+
+/* SECTION TITLE */
+.stitle{font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.8px;margin:18px 0 10px}
+
+/* QUICK ADD */
+.qadd{background:var(--bg3);border-radius:12px;display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--gray2);margin-bottom:10px;cursor:pointer;transition:all .15s}
+.qadd:active{background:var(--bg4)}
+.qadd svg{stroke:var(--blue);flex-shrink:0}
+.qadd-txt{font-size:14px;color:var(--gray);flex:1}
+.qadd-badge{background:var(--bg4);border-radius:8px;padding:4px 10px;font-size:12px;font-weight:600;color:var(--text2);white-space:nowrap}
+
+/* TASK */
+.tcard{background:var(--bg2);border-radius:14px;padding:12px 14px;margin-bottom:8px;border:1px solid var(--gray2);display:flex;align-items:flex-start;gap:10px;transition:opacity .2s;position:relative}
+.tcard.done{opacity:.45}
+.tcard.done .ttitle{text-decoration:line-through;color:var(--gray)}
+.tcard.overdue{border-left:3px solid var(--red)}
+.chkbtn{width:22px;height:22px;border-radius:50%;border:2px solid var(--gray2);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;background:transparent;margin-top:2px;-webkit-appearance:none}
+.chkbtn.done{background:var(--green);border-color:var(--green)}
+.chkbtn svg{width:11px;height:11px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0;transition:opacity .15s}
+.chkbtn.done svg{opacity:1}
+.tbody{flex:1;min-width:0}
+.ttitle{font-size:14px;font-weight:500;color:var(--text);margin-bottom:3px;word-break:break-word;line-height:1.4}
+.tmeta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ttime{font-size:11px;color:var(--blue);font-weight:600}
+.ptag{font-size:10px;background:rgba(255,159,10,.15);color:var(--orange);border-radius:5px;padding:2px 6px;font-weight:600}
+.tacts{display:flex;gap:4px;flex-shrink:0}
+.icbtn{width:30px;height:30px;background:var(--bg4);border-radius:8px;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;-webkit-appearance:none}
+.icbtn:active{transform:scale(0.85)}
+.icbtn svg{width:14px;height:14px;stroke:var(--gray);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* FINE */
+.finebox{background:rgba(255,69,58,.08);border:1px solid rgba(255,69,58,.25);border-radius:14px;padding:12px 14px;margin-bottom:8px}
+.fine-hdr{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.fine-ttl{font-size:11px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.5px}
+.fine-item{font-size:13px;color:var(--text2);padding:5px 0;border-bottom:1px solid rgba(255,69,58,.1);display:flex;align-items:center;gap:7px}
+.fine-item:last-child{border-bottom:none}
+.fdot{width:5px;height:5px;border-radius:50%;background:var(--red);flex-shrink:0}
+.fine-dt{margin-left:auto;font-size:10px;color:var(--gray)}
+.fine-ok{background:rgba(48,209,88,.2);border:none;border-radius:6px;padding:3px 8px;font-size:11px;color:var(--green);cursor:pointer;font-family:inherit;flex-shrink:0;-webkit-appearance:none}
+
+/* CALENDAR */
+.cal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cal-mo{font-size:20px;font-weight:700;letter-spacing:-.5px}
+.cal-nav{display:flex;gap:4px}
+.cal-nav button{width:34px;height:34px;background:var(--bg3);border:1px solid var(--gray2);border-radius:9px;color:var(--text);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;-webkit-appearance:none;transition:all .15s}
+.cal-nav button:active{transform:scale(0.9)}
+.cgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:14px}
+.cdn{font-size:10px;color:var(--gray);text-align:center;padding:5px 0;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.cday{height:40px;display:flex;align-items:center;justify-content:center;border-radius:9px;font-size:14px;cursor:pointer;position:relative;flex-direction:column;gap:1px;transition:all .15s;-webkit-appearance:none;border:none;background:transparent;color:var(--text)}
+.cday:active{transform:scale(0.85)}
+.cday.other{color:var(--gray2)}
+.cday.today{color:var(--white);font-weight:700;background:var(--blue)}
+.cday.sel:not(.today){background:rgba(10,132,255,.18);color:var(--blue2)}
+.cday .dot{width:4px;height:4px;border-radius:50%;background:var(--blue);position:absolute;bottom:3px}
+.cday.today .dot{background:rgba(255,255,255,.8)}
+.cal-dtitle{font-size:15px;font-weight:700;margin-bottom:10px}
+
+/* PRAYER PAGE */
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pcard{background:var(--bg2);border-radius:14px;padding:14px;border:1px solid var(--gray2);transition:all .2s}
+.pcard.cur{border-color:var(--blue);background:rgba(10,132,255,.08)}
+.pcard.past{opacity:.5}
+.pcard.next{border-color:rgba(255,159,10,.4)}
+.p-ico{font-size:22px;margin-bottom:6px}
+.p-nm{font-size:14px;font-weight:700;margin-bottom:2px}
+.p-tm{font-size:20px;font-weight:300;color:var(--blue)}
+.pcard.past .p-tm{color:var(--text2)}
+.pcard.next .p-tm{color:var(--orange)}
+.pbadge{font-size:10px;font-weight:700;margin-top:6px;padding:3px 8px;border-radius:5px;display:inline-block}
+.pbadge.cur{background:rgba(10,132,255,.2);color:var(--blue)}
+.pbadge.nxt{background:rgba(255,159,10,.2);color:var(--orange)}
+.pbadge.past{background:rgba(48,209,88,.12);color:var(--green)}
+
+/* MODAL */
+#moverlay{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.75);display:none;align-items:flex-end}
+#moverlay.on{display:flex}
+.msheet{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;padding:14px 18px calc(24px + var(--safe-bot));border-top:1px solid var(--gray2);animation:sup .28s ease-out}
+@keyframes sup{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mhandle{width:36px;height:4px;background:var(--gray2);border-radius:2px;margin:0 auto 16px}
+.mtitle{font-size:18px;font-weight:700;margin-bottom:16px;letter-spacing:-.3px}
+.igrp{margin-bottom:12px}
+.ilbl{font-size:11px;color:var(--gray);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.ifield{width:100%;background:var(--bg3);border:1.5px solid var(--gray2);border-radius:11px;padding:12px 13px;font-size:15px;color:var(--text);outline:none;font-family:inherit;transition:border-color .2s;appearance:none;-webkit-appearance:none}
+.ifield:focus{border-color:var(--blue)}
+.ifield::placeholder{color:var(--gray)}
+.mbtns{display:flex;gap:8px;margin-top:16px}
+.bcnl{flex:1;background:var(--bg3);border:1px solid var(--gray2);border-radius:11px;padding:13px;font-size:14px;font-weight:600;color:var(--text);cursor:pointer;font-family:inherit;transition:all .15s;-webkit-appearance:none}
+.bcnl:active{transform:scale(0.97)}
+.bsav{flex:2;background:var(--blue);border:none;border-radius:11px;padding:13px;font-size:14px;font-weight:600;color:#fff;cursor:pointer;font-family:inherit;transition:all .15s;-webkit-appearance:none}
+.bsav:active{transform:scale(0.97);background:#0070d8}
+
+/* ALARM MODAL */
+#aoverlay{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.75);display:none;align-items:flex-end}
+#aoverlay.on{display:flex}
+.tog-row{display:flex;align-items:center;justify-content:space-between;background:var(--bg3);border-radius:11px;padding:12px 14px;margin-bottom:10px}
+.tog-lbl{font-size:14px;font-weight:600}
+.tog-sub{font-size:12px;color:var(--gray)}
+.tog{position:relative;width:46px;height:26px;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0;position:absolute}
+.tog-sl{position:absolute;inset:0;background:var(--gray2);border-radius:13px;transition:.3s;cursor:pointer}
+.tog-sl::before{content:'';position:absolute;height:20px;width:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s}
+.tog input:checked + .tog-sl{background:var(--blue)}
+.tog input:checked + .tog-sl::before{transform:translateX(20px)}
+
+/* FAB */
+.fab{position:fixed;right:18px;bottom:calc(68px + var(--safe-bot));width:50px;height:50px;background:var(--blue);border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:100;box-shadow:0 4px 18px rgba(10,132,255,.45);transition:all .15s;-webkit-appearance:none}
+.fab:active{transform:scale(0.88)}
+.fab svg{stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+/* NOTIF */
+#nbar{position:fixed;top:calc(var(--safe-top) + 8px);left:14px;right:14px;z-index:2000;transition:all .35s cubic-bezier(.34,1.56,.64,1);transform:translateY(calc(-100% - 60px));opacity:0;pointer-events:none}
+#nbar.show{transform:translateY(0);opacity:1;pointer-events:all}
+.ncard{background:rgba(25,25,40,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:16px;padding:12px 14px;border:1px solid var(--gray2);display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.nico{width:34px;height:34px;background:var(--blue);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+.nbody{flex:1}
+.napp{font-size:10px;color:var(--gray);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.ntxt{font-size:12px;color:var(--text);margin-top:1px;line-height:1.4}
+.ncls{color:var(--gray);cursor:pointer;font-size:20px;line-height:1;flex-shrink:0;padding:0 4px}
+
+/* ALARM RING */
+#aring{position:fixed;inset:0;z-index:3000;background:linear-gradient(160deg,#001840,#0A84FF);display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px}
+#aring.on{display:flex}
+.ar-title{font-size:16px;font-weight:600;color:rgba(255,255,255,.7);margin-bottom:6px}
+.ar-time{font-size:76px;font-weight:200;color:#fff;margin-bottom:4px;letter-spacing:-3px;line-height:1}
+.ar-label{font-size:16px;color:rgba(255,255,255,.6);margin-bottom:56px;line-height:1.5}
+.ar-stop{background:#fff;color:var(--blue);border:none;border-radius:50px;padding:16px 56px;font-size:17px;font-weight:700;cursor:pointer;font-family:inherit;animation:rpulse 1.2s ease-in-out infinite;-webkit-appearance:none}
+@keyframes rpulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,255,255,.4)}50%{transform:scale(1.03);box-shadow:0 0 0 12px rgba(255,255,255,0)}}
+
+/* CONFLICT */
+#conflictmod{position:fixed;inset:0;z-index:4000;background:rgba(0,0,0,.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;padding:24px}
+#conflictmod.on{display:flex}
+.cfcard{background:var(--bg2);border-radius:20px;padding:24px;max-width:340px;width:100%;border:1px solid rgba(255,159,10,.35);text-align:center}
+.cf-ico{font-size:44px;margin-bottom:10px}
+.cf-title{font-size:17px;font-weight:700;color:var(--orange);margin-bottom:8px}
+.cf-txt{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:18px}
+.cfbtns{display:flex;flex-direction:column;gap:8px}
+.cfbtn{border:none;border-radius:11px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;-webkit-appearance:none}
+.cfbtn.p{background:var(--blue);color:#fff}
+.cfbtn.s{background:var(--bg3);color:var(--text);border:1px solid var(--gray2)}
+.cfbtn:active{transform:scale(0.97)}
+
+.empty{text-align:center;padding:32px 16px;color:var(--gray)}
+.empty-ico{font-size:36px;margin-bottom:10px}
+.empty p{font-size:13px;line-height:1.6}
+</style>
+</head>
+<body>
+
+<div id="onboard">
+  <div class="ob-logo">Flow</div>
+  <div class="ob-tag">Kunlaringizni mazmunli o'tkazing</div>
+  <div class="ob-h">Assalomu alaykum! 👋</div>
+  <div class="ob-p">Ismingizni kiriting — biz sizga moslashtirilgan tajriba taqdim etamiz va vazifelaringizni eslatib turamiz.</div>
+  <input class="ob-inp" id="ninp" type="text" placeholder="Ismingiz..." maxlength="30" autocomplete="off" autocorrect="off" autocapitalize="words">
+  <button class="ob-btn" id="startbtn">Boshlash →</button>
+</div>
+
+<div id="app">
+  <img src="./images/flow.jpg" alt="Flow Logo Background" class="bg-wall-logo">
+
+  <div id="topbar">
+    <div class="gr-row">
+      <div class="gr-name" id="grname">Salom!</div>
+      <button class="notif-btn" id="albtn" aria-label="Eslatma sozlamalari">
+        <svg width="18" height="18" viewBox="0 0 24 24" stroke="var(--blue)" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </button>
+    </div>
+    <div class="clock-wrap">
+      <span class="clk"><span id="ch">00</span><span class="clk-colon">:</span><span id="cm">00</span><span class="clk-sec" id="cs">00</span></span>
+      <div class="date-txt" id="dtxt">-</div>
+    </div>
+    <div class="prayer-strip" id="pstrip">
+      <div class="ps-left">
+        <div class="ps-lbl">Keyingi namoz</div>
+        <div class="ps-name" id="pnext">-</div>
+        <div class="ps-cnt" id="pcnt">-</div>
+      </div>
+      <div class="ps-right" id="pmini"></div>
+    </div>
+  </div>
+
+  <div id="pages">
+    <div class="pg on" id="pg-today">
+      <div class="pi">
+        <div class="stitle">Bugungi reja</div>
+        <div class="qadd" id="qaddbtn">
+          <svg width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          <span class="qadd-txt">Yangi vazifa qo'shing...</span>
+          <span class="qadd-badge" id="ctbadge">00:00</span>
+        </div>
+        <div id="tlist"></div>
+        <div id="finesec"></div>
+      </div>
+    </div>
+
+    <div class="pg" id="pg-others">
+      <div class="pi">
+        <div class="stitle">Kelajakdagi va boshqa kunlardagi rejalar</div>
+        <div id="others-list"></div>
+      </div>
+    </div>
+
+    <div class="pg" id="pg-cal">
+      <div class="pi">
+        <div class="cal-hdr">
+          <div class="cal-mo" id="calmo">-</div>
+          <div class="cal-nav">
+            <button id="cprev">‹</button>
+            <button id="cnext">›</button>
+          </div>
+        </div>
+        <div class="cgrid" id="cgrid"></div>
+        <div class="cal-dtitle" id="caldtitle">Tanlangan kun</div>
+        <div id="caltasks"></div>
+      </div>
+    </div>
+
+    <div class="pg" id="pg-prayer">
+      <div class="pi">
+        <div class="stitle">Bugun — Toshkent namoz vaqtlari</div>
+        <div class="pgrid" id="pfull"></div>
+        <div class="stitle" style="margin-top:20px">Ertaga — Namoz vaqtlari</div>
+        <div class="pgrid" id="ptomorrow"></div>
+      </div>
+    </div>
+  </div>
+
+  <nav id="botnav">
+    <button class="ni on" data-pg="today">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      <span>Bugun</span>
+    </button>
+    <button class="ni" data-pg="others">
+      <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      <span>Boshqa</span>
+    </button>
+    <button class="ni" data-pg="cal">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Kalendar</span>
+    </button>
+    <button class="ni" data-pg="prayer">
+      <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>Namoz</span>
+    </button>
+  </nav>
+
+  <button class="fab" id="fab" aria-label="Yangi vazifa">
+    <svg width="24" height="24" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  </button>
+</div>
+
+<div id="moverlay">
+  <div class="msheet" id="msheet">
+    <div class="mhandle"></div>
+    <div class="mtitle" id="mtitle">Yangi vazifa</div>
+    <div class="igrp"><div class="ilbl">Vazifa nomi</div><input class="ifield" id="ttext" placeholder="Nima qilasiz?" type="text" autocomplete="off" autocorrect="off"></div>
+    <div class="igrp"><div class="ilbl">Sana</div><input class="ifield" id="tdate" type="date"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="igrp"><div class="ilbl">Boshlanish</div><input class="ifield" id="tstart" type="time"></div>
+      <div class="igrp"><div class="ilbl">Tugash</div><input class="ifield" id="tend" type="time"></div>
+    </div>
+    <div class="mbtns">
+      <button class="bcnl" id="mcnl">Bekor</button>
+      <button class="bsav" id="msav">Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<div id="aoverlay">
+  <div class="msheet">
+    <div class="mhandle"></div>
+    <div class="mtitle">⏰ Eslatma sozlamalari</div>
+    <div class="tog-row">
+      <div><div class="tog-lbl">Kunlik eslatma</div><div class="tog-sub">Har kuni ishlaringizni eslatadi</div></div>
+      <label class="tog"><input type="checkbox" id="dtog"><span class="tog-sl"></span></label>
+    </div>
+    <div id="atrow" style="display:none">
+      <div class="igrp"><div class="ilbl">Vaqt</div><input class="ifield" id="atime" type="time" value="08:00"></div>
+      <div class="tog-row">
+        <div><div class="tog-lbl">🔔 Ovozli budilnik</div><div class="tog-sub">Jiringlash bilan uyg'otadi</div></div>
+        <label class="tog"><input type="checkbox" id="stog"><span class="tog-sl"></span></label>
+      </div>
+    </div>
+    <div class="mbtns">
+      <button class="bcnl" id="acnl">Yopish</button>
+      <button class="bsav" id="asav">Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<div id="nbar">
+  <div class="ncard">
+    <div class="nico" id="nico">📋</div>
+    <div class="nbody"><div class="napp">Flow</div><div class="ntxt" id="ntxt">-</div></div>
+    <div class="ncls" id="ncls">×</div>
+  </div>
+</div>
+
+<div id="aring">
+  <div class="ar-title">⏰ Budilnik!</div>
+  <div class="ar-time" id="artime">08:00</div>
+  <div class="ar-label" id="arlbl">Ishlaringizni ko'rib chiqing</div>
+  <button class="ar-stop" id="arstop">To'xtatish</button>
+</div>
+
+<div id="taskring" style="position:fixed;inset:0;z-index:3500;background:linear-gradient(160deg,#0A1A30,#003A80);display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:40px">
+  <div style="font-size:14px;font-weight:600;color:rgba(255,255,255,.65);margin-bottom:4px">📋 Vazifa eslatmasi</div>
+  <div style="font-size:60px;font-weight:200;color:#fff;margin-bottom:6px;letter-spacing:-2px;line-height:1" id="tr-time">10:00</div>
+  <div style="font-size:22px;font-weight:700;color:#fff;margin-bottom:8px;max-width:300px;line-height:1.3" id="tr-title">-</div>
+  <div style="font-size:15px;color:rgba(255,255,255,.6);margin-bottom:52px;line-height:1.5;max-width:280px" id="tr-label">-</div>
+  <button onclick="stopTaskRing()" style="background:#fff;color:#003A80;border:none;border-radius:50px;padding:15px 52px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow: 0 0 15px rgba(255,255,255,0.4)">Tushundim ✓</button>
+</div>
+
+<div id="conflictmod">
+  <div class="cfcard">
+    <div class="cf-ico">🕌</div>
+    <div class="cf-title" id="cftitle">Namoz vaqti!</div>
+    <div class="cf-txt" id="cftxt">-</div>
+    <div class="cfbtns">
+      <button class="cfbtn p" id="cfclose">Tushundim, o'zgartiraman</button>
+      <button class="cfbtn s" id="cfforce">Shunga qaramay saqlash</button>
+    </div>
+  </div>
+</div>
+
+<div id="permprompt" style="position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,.8);backdrop-filter:blur(14px);display:none;align-items:flex-end;padding:0">
+  <div style="background:#1A1A2E;border-radius:20px 20px 0 0;width:100%;padding:20px 20px 36px;border-top:1px solid #2A2A4A;">
+    <div style="width:36px;height:4px;background:#2A2A4A;border-radius:2px;margin:0 auto 18px"></div>
+    <div style="font-size:32px;margin-bottom:10px;text-align:center">🔔</div>
+    <div style="font-size:19px;font-weight:700;text-align:center;margin-bottom:8px;letter-spacing:-.3px">Bildirishnomalar yoqilsinmi?</div>
+    <div style="font-size:14px;color:#A0A0C0;text-align:center;line-height:1.6;margin-bottom:24px">Flow saytdan chiqib ketsangiz ham vazifa yoki namoz vaqtida jiringlab, bildirishnoma yuboradi.</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button onclick="grantPerm()" style="background:#0A84FF;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit">Ha, yoqish ✓</button>
+      <button onclick="denyPerm()" style="background:#1A1A2E;border:1px solid #2A2A4A;border-radius:12px;padding:13px;font-size:14px;font-weight:600;color:#A0A0C0;cursor:pointer;font-family:inherit">Keyinroq</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+// ── DATA ──
+const MO=['Yanvar','Fevral','Mart','Aprel','May','Iyun','Iyul','Avgust','Sentabr','Oktabr','Noyabr','Dekabr'];
+const WD_SHORT=['Yak','Du','Se','Chor','Pay','Jum','Sha'];
+const WD_FULL=['Yakshanba','Dushanba','Seshanba','Chorshanba','Payshanba','Juma','Shanba'];
+const PN=['Bomdod','Quyosh','Peshin','Asr','Shom','Xufton'];
+const PI=['🌙','☀️','🌤️','🌇','🌆','🌃'];
+
+const PT={
+  1:['06:32','08:06','13:00','15:28','17:58','19:22'],
+  2:['06:10','07:44','12:59','15:52','18:19','19:44'],
+  3:['05:28','06:58','12:55','16:18','18:58','20:23'],
+  4:['04:42','06:12','12:47','16:44','19:36','21:02'],
+  5:['04:02','05:32','12:42','17:04','20:07','21:34'],
+  6:['03:42','05:18','12:43','17:20','20:32','22:06'],
+  7:['03:58','05:28','12:48','17:20','20:31','21:59'],
+  8:['04:33','05:58','12:47','17:01','20:01','21:24'],
+  9:['05:08','06:30','12:39','16:27','19:10','20:33'],
+  10:['05:44','07:06','12:33','15:52','18:16','19:38'],
+  11:['06:22','07:48','12:36','15:22','17:46','19:09'],
+  12:['06:42','08:10','12:50','15:18','17:40','19:08'],
+};
+
+function pad(n){return String(n).padStart(2,'0');}
+function toMin(t){const[h,m]=t.split(':').map(Number);return h*60+m;}
+function fmtDate(d){return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2);}
+function getPT(date){return PT[(date||new Date()).getMonth()+1];}
+
+// ── STATE ──
+let user='';
+let tasks=JSON.parse(localStorage.getItem('fl_tasks')||'[]');
+let alarm=JSON.parse(localStorage.getItem('fl_alarm')||'{"on":false,"time":"08:00","sound":false}');
+let calDate=new Date();
+let selDate=new Date();
+let editId=null;
+let pendTask=null;
+let alarmCheckKey='';
+let shownTaskAlarms={};
+let shownPrayerAlarms={};
+
+let taskAlarmCtx=null;
+let taskAlarmTimer=null;
+
+// ── ONBOARD ──
+const ninp=document.getElementById('ninp');
+const startbtn=document.getElementById('startbtn');
+
+function startApp(){
+  const v=ninp.value.trim();
+  if(!v){ninp.focus();ninp.style.borderColor='var(--red)';setTimeout(()=>ninp.style.borderColor='',1000);return;}
+  user=v;
+  localStorage.setItem('fl_user',user);
+  document.getElementById('onboard').style.opacity='0';
+  document.getElementById('onboard').style.pointerEvents='none';
+  setTimeout(()=>{document.getElementById('onboard').style.display='none';},400);
+  document.getElementById('app').classList.add('on');
+  init();
+}
+startbtn.addEventListener('click',startApp);
+ninp.addEventListener('keydown',e=>{if(e.key==='Enter')startApp();});
+
+(function checkUser(){
+  const s=localStorage.getItem('fl_user');
+  if(s){
+    user=s;
+    document.getElementById('onboard').style.display='none';
+    document.getElementById('app').classList.add('on');
+    init();
+  }
+})();
+
+// ── INIT ──
+function init(){
+  updateGreeting();
+  tick();
+  setInterval(tick,1000);
+  renderAll();
+
+  // Navigation
+  document.querySelectorAll('.ni').forEach(btn=>{
+    btn.addEventListener('click',function(){
+      const pg=this.dataset.pg;
+      document.querySelectorAll('.ni').forEach(b=>b.classList.remove('on'));
+      document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+      this.classList.add('on');
+      document.getElementById('pg-'+pg).classList.add('on');
+      if(pg==='cal')renderCal();
+      if(pg==='prayer')renderPrayer();
+      if(pg==='others')renderOthers();
+    });
+  });
+
+  document.getElementById('fab').addEventListener('click',()=>openModal());
+  document.getElementById('qaddbtn').addEventListener('click',()=>openModal());
+  document.getElementById('mcnl').addEventListener('click',closeModal);
+  document.getElementById('msav').addEventListener('click',()=>saveTask());
+  document.getElementById('moverlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+  
+  document.getElementById('albtn').addEventListener('click',openAlarm);
+  document.getElementById('acnl').addEventListener('click',closeAlarm);
+  document.getElementById('asav').addEventListener('click',saveAlarm);
+  document.getElementById('aoverlay').addEventListener('click',function(e){if(e.target===this)closeAlarm();});
+  document.getElementById('dtog').addEventListener('change',function(){
+    document.getElementById('atrow').style.display=this.checked?'block':'none';
+  });
+
+  document.getElementById('ncls').addEventListener('click',hideNotif);
+  document.getElementById('arstop').addEventListener('click',stopAlarm);
+  document.getElementById('cfclose').addEventListener('click',()=>{closeConflict(false);});
+  document.getElementById('cfforce').addEventListener('click',()=>{closeConflict(true);});
+  
+  document.getElementById('cprev').addEventListener('click',()=>{calDate.setMonth(calDate.getMonth()-1);renderCal();});
+  document.getElementById('cnext').addEventListener('click',()=>{calDate.setMonth(calDate.getMonth()+1);renderCal();});
+  
+  document.getElementById('pstrip').addEventListener('click',()=>{
+    document.querySelectorAll('.ni').forEach(b=>b.classList.remove('on'));
+    document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+    document.querySelector('[data-pg="prayer"]').classList.add('on');
+    document.getElementById('pg-prayer').classList.add('on');
+    renderPrayer();
+  });
+
+  // AVTOMATIK BILDIRISHNOMA SO'ROVI
+  if ('Notification' in window) {
+    if (Notification.permission === 'default') {
+      document.getElementById('permprompt').style.display = 'flex';
+    } else if (Notification.permission === 'granted') {
+      registerSW();
+    }
+  }
+}
+
+function saveTasks(){
+  localStorage.setItem('fl_tasks',JSON.stringify(tasks));
+  sendTasksToSW();
+}
+
+function renderAll(){
+  renderTasks();
+  renderOthers();
+  renderCal();
+  renderPrayer();
+  updatePrayerStrip();
+}
+
+// ── CLOCK TICK ──
+function tick(){
+  const now=new Date();
+  document.getElementById('ch').textContent=pad(now.getHours());
+  document.getElementById('cm').textContent=pad(now.getMinutes());
+  document.getElementById('cs').textContent=pad(now.getSeconds());
+  const wd=WD_FULL[now.getDay()];
+  document.getElementById('dtxt').textContent=`${wd}, ${now.getDate()} ${MO[now.getMonth()]} ${now.getFullYear()}`;
+  document.getElementById('ctbadge').textContent=`${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  
+  updatePrayerStrip();
+  checkAlarmTick(now);
+  checkTaskReminders(now);
+  checkPrayerReminders(now);
+  checkEveningReminder(now);
+}
+
+function updateGreeting(){
+  const h=new Date().getHours();
+  const g=h<5?'Xayrli tun':h<12?'Xayrli tong':h<17?'Xayrli kun':'Xayrli kech';
+  document.getElementById('grname').textContent=`${g}, ${user}!`;
+}
+
+// ── PRAYER STRIP ──
+function updatePrayerStrip(){
+  const now=new Date();
+  const times=getPT(now);
+  const nowMin=now.getHours()*60+now.getMinutes();
+  let nextIdx=times.findIndex(t=>toMin(t)>nowMin);
+  if(nextIdx<0)nextIdx=0;
+  document.getElementById('pnext').textContent=PN[nextIdx]+' '+PI[nextIdx];
+  const diff=toMin(times[nextIdx])-nowMin;
+  const ad=diff<0?diff+1440:diff;
+  const dh=Math.floor(ad/60),dm=ad%60;
+  document.getElementById('pcnt').textContent=dh>0?`${dh}s ${dm}d qoldi`:`${dm} daqiqa qoldi`;
+  const shown=[0,2,4];
+  document.getElementById('pmini').innerHTML=shown.map(i=>`<div class="pmi${i===nextIdx?' cur':''}"><div class="pmi-l">${PN[i].slice(0,3)}</div><div class="pmi-v">${times[i]}</div></div>`).join('');
+}
+
+function checkConflict(startTime,date){
+  if(!startTime)return null;
+  const d=date?new Date(date):new Date();
+  const times=getPT(d);
+  const sm=toMin(startTime);
+  for(let i=0;i<times.length;i++){
+    if(Math.abs(sm-toMin(times[i]))<=10) return {name:PN[i],time:times[i],idx:i};
+  }
+  return null;
+}
+
+// ── RENDER REJALAR ──
+function getByDate(ds){
+  return tasks.filter(t=>t.date===ds).sort((a,b)=>{
+    if(a.start&&b.start)return a.start.localeCompare(b.start);
+    return a.start?-1:b.start?1:0;
+  });
+}
+
+function renderTasks(){
+  const today=fmtDate(new Date());
+  const list=getByDate(today);
+  const tl=document.getElementById('tlist');
+  if(!list.length){
+    tl.innerHTML=`<div class="empty"><div class="empty-ico">📋</div><p>Bugun hech qanday vazifa yo'q.<br>Yangi vazifa qo'shing!</p></div>`;
+  } else {
+    tl.innerHTML=list.map(t=>taskCard(t)).join('');
+  }
+  const overdue=tasks.filter(t=>t.date<today&&!t.done);
+  const fs=document.getElementById('finesec');
+  if(overdue.length){
+    fs.innerHTML=`<div class="finebox">
+      <div class="fine-hdr"><div class="fine-ttl">Bajarilmagan (${overdue.length})</div></div>
+      ${overdue.map(t=>`<div class="fine-item"><div class="fdot"></div><span style="flex:1">${esc(t.text)}</span><span class="fine-dt">${t.date}</span><button class="fine-ok" onclick="doToggle('${t.id}')">✓</button></div>`).join('')}
+    </div>`;
+  } else fs.innerHTML='';
+}
+
+function renderOthers(){
+  const today=fmtDate(new Date());
+  const list=tasks.filter(t=>t.date !== today).sort((a,b)=>a.date.localeCompare(b.date) || (a.start||'').localeCompare(b.start||''));
+  const el=document.getElementById('others-list');
+  if(!list.length){
+    el.innerHTML=`<div class="empty"><div class="empty-ico">📅</div><p>Boshqa kunlarda vazifalar yo'q.</p></div>`;
+  } else {
+    el.innerHTML=list.map(t=>`<div style="font-size:11px; font-weight:700; color:var(--blue); margin: 10px 0 4px; text-transform:uppercase">${t.date}</div>` + taskCard(t)).join('');
+  }
+}
+
+function taskCard(t){
+  const conflict=t.start?checkConflict(t.start,t.date):null;
+  const ptag=conflict?`<span class="ptag">⚠️ ${conflict.name}</span>`:'';
+  return `<div class="tcard${t.done?' done':''}">
+    <button class="chkbtn${t.done?' done':''}" onclick="doToggle('${t.id}')">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    </button>
+    <div class="tbody">
+      <div class="ttitle">${esc(t.text)}</div>
+      <div class="tmeta">
+        ${t.start?`<span class="ttime">${t.start}${t.end?' – '+t.end:''}</span>`:''}
+        ${ptag}
+      </div>
+    </div>
+    <div class="tacts">
+      <button class="icbtn" onclick="openModal('${t.id}')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+      <button class="icbtn" onclick="doDelete('${t.id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+    </div>
+  </div>`;
+}
+
+window.doToggle=function(id){
+  const t=tasks.find(t=>t.id===id);
+  if(t){
+    t.done=!t.done;
+    saveTasks();
+    if(t.done) showNotif('🎉', `"${t.text.slice(0,25)}" bajarildi!`);
+    renderAll();
+  }
+};
+
+window.doDelete=function(id){
+  tasks=tasks.filter(t=>t.id!==id);
+  saveTasks();
+  renderAll();
+};
+
+// ── MODAL LOGIC ──
+function openModal(id){
+  editId=id||null;
+  document.getElementById('mtitle').textContent=id?'Vazifani tahrirlash':'Yangi vazifa';
+  if(id){
+    const t=tasks.find(t=>t.id===id);
+    if(t){
+      document.getElementById('ttext').value=t.text;
+      document.getElementById('tdate').value=t.date;
+      document.getElementById('tstart').value=t.start||'';
+      document.getElementById('tend').value=t.end||'';
+    }
+  } else {
+    document.getElementById('ttext').value='';
+    document.getElementById('tdate').value=fmtDate(new Date());
+    document.getElementById('tstart').value='';
+    document.getElementById('tend').value='';
+  }
+  document.getElementById('moverlay').classList.add('on');
+}
+window.openModal=openModal;
+
+function closeModal(){
+  document.getElementById('moverlay').classList.remove('on');
+}
+
+function saveTask(force){
+  const text=document.getElementById('ttext').value.trim();
+  const date=document.getElementById('tdate').value||fmtDate(new Date());
+  const start=document.getElementById('tstart').value;
+  const end=document.getElementById('tend').value;
+  if(!text){document.getElementById('ttext').focus();return;}
+  if(!force&&start){
+    const cf=checkConflict(start,date);
+    if(cf){
+      pendTask={text,date,start,end};
+      closeModal();
+      showConflict(cf);
+      return;
+    }
+  }
+  doSave(text,date,start,end);
+}
+
+function doSave(text,date,start,end){
+  if(editId){
+    const idx=tasks.findIndex(t=>t.id===editId);
+    if(idx>-1) tasks[idx]={...tasks[idx],text,date,start,end};
+  } else {
+    tasks.push({id:uid(),text,date,start,end,done:false,at:Date.now()});
+  }
+  saveTasks();
+  closeModal();
+  renderAll();
+  showNotif('✅', `Vazifa saqlandi!`);
+}
+
+function showConflict(cf){
+  document.getElementById('cftitle').textContent=`⚠️ ${cf.name} namoz vaqti!`;
+  document.getElementById('cftxt').textContent=`${user}, soat ${cf.time} da ${cf.name} namozi boshlanadi. Boshqa vaqtga rejalashtirishni tavsiya qilamiz.`;
+  document.getElementById('conflictmod').classList.add('on');
+}
+function closeConflict(force){
+  document.getElementById('conflictmod').classList.remove('on');
+  if(force&&pendTask){
+    doSave(pendTask.text,pendTask.date,pendTask.start,pendTask.end);
+  }
+  pendTask=null;
+}
+
+// ── KALENDAR ──
+function renderCal(){
+  const y=calDate.getFullYear(),m=calDate.getMonth();
+  document.getElementById('calmo').textContent=`${MO[m]} ${y}`;
+  const first=new Date(y,m,1);
+  const last=new Date(y,m+1,0);
+  const todayStr=fmtDate(new Date());
+  const selStr=fmtDate(selDate);
+  let html=WD_SHORT.map(d=>`<div class="cdn">${d}</div>`).join('');
+  for(let i=0;i<first.getDay();i++) html+=`<div class="cday other"></div>`;
+  for(let d=1;d<=last.getDate();d++){
+    const ds=`${y}-${pad(m+1)}-${pad(d)}`;
+    const isT=ds===todayStr,isS=ds===selStr;
+    const hT=tasks.some(t=>t.date===ds);
+    const cls=[isT?'today':'',isS&&!isT?'sel':''].filter(Boolean).join(' ');
+    html+=`<button class="cday ${cls}" onclick="selCalDay('${ds}')">${d}${hT?'<div class="dot"></div>':''}</button>`;
+  }
+  document.getElementById('cgrid').innerHTML=html;
+  renderCalTasks();
+}
+window.selCalDay=function(ds){
+  selDate=new Date(ds);
+  renderCal();
+};
+function renderCalTasks(){
+  const ds=fmtDate(selDate);
+  const list=getByDate(ds);
+  document.getElementById('caldtitle').textContent=`${selDate.getDate()} ${MO[selDate.getMonth()]} — Vazifalar`;
+  const el=document.getElementById('caltasks');
+  if(!list.length){
+    el.innerHTML=`<div class="empty" style="padding:20px 0"><p>Bu kunda vazifalar yo'q</p></div>`;
+  } else {
+    el.innerHTML=list.map(t=>taskCard(t)).join('');
+  }
+}
+
+// ── PRAYER PAGE ──
+function renderPrayer(){
+  const now=new Date();
+  const tm=getPT(now);
+  const nowMin=now.getHours()*60+now.getMinutes();
+  let nextIdx=tm.findIndex(t=>toMin(t)>nowMin);
+  if(nextIdx<0)nextIdx=6;
+  document.getElementById('pfull').innerHTML=tm.map((t,i)=>{
+    let cls='',badge='';
+    if(i===nextIdx){cls=' next';badge=`<span class="pbadge nxt">Keyingi</span>`;}
+    else if(i<nextIdx){cls=' past';badge=`<span class="pbadge past">O'tdi ✓</span>`;}
+    return `<div class="pcard${cls}"><div class="p-ico">${PI[i]}</div><div class="p-nm">${PN[i]}</div><div class="p-tm">${t}</div>${badge}</div>`;
+  }).join('');
+  const tom=new Date(now);tom.setDate(tom.getDate()+1);
+  const tt=getPT(tom);
+  document.getElementById('ptomorrow').innerHTML=tt.map((t,i)=>`<div class="pcard"><div class="p-ico">${PI[i]}</div><div class="p-nm">${PN[i]}</div><div class="p-tm" style="color:var(--text2)">${t}</div></div>`).join('');
+}
+
+// ── ALARM SOZLAMALARI ──
+function openAlarm(){
+  document.getElementById('dtog').checked=alarm.on;
+  document.getElementById('atime').value=alarm.time;
+  document.getElementById('stog').checked=alarm.sound;
+  document.getElementById('atrow').style.display=alarm.on?'block':'none';
+  document.getElementById('aoverlay').classList.add('on');
+}
+function closeAlarm(){document.getElementById('aoverlay').classList.remove('on');}
+function saveAlarm(){
+  alarm={on:document.getElementById('dtog').checked,time:document.getElementById('atime').value,sound:document.getElementById('stog').checked};
+  localStorage.setItem('fl_alarm',JSON.stringify(alarm));
+  closeAlarm();
+  sendTasksToSW();
+}
+
+// ── JIRINGLASH VA OVOZLI BILDIRISHNOMALAR ──
+function checkAlarmTick(now){
+  if(!alarm.on)return;
+  const ct=`${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  const key=`${fmtDate(now)}-${alarm.time}`;
+  if(ct===alarm.time&&alarmCheckKey!==key){
+    alarmCheckKey=key;
+    document.getElementById('artime').textContent=alarm.time;
+    document.getElementById('aring').classList.add('on');
+    if(alarm.sound) startSound(880, 'sine');
+  }
+}
+
+function checkTaskReminders(now){
+  const ds=fmtDate(now);
+  const ct=`${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  getByDate(ds).forEach(t=>{
+    if(!t.start||t.done)return;
+    const key=`tr-${t.id}-${ds}-${t.start}`;
+    if(t.start===ct&&!shownTaskAlarms[key]){
+      shownTaskAlarms[key]=true;
+      triggerTaskAlarm(t);
+    }
+  });
+}
+
+function triggerTaskAlarm(t){
+  document.getElementById('tr-time').textContent=t.start;
+  document.getElementById('tr-title').textContent=t.text;
+  document.getElementById('tr-label').textContent=`${user}, hozir vazifa vaqti keldi!`;
+  document.getElementById('taskring').style.display='flex';
+  
+  startSound(660, 'triangle');
+  speakTTS(`${user}, siz hozir ${t.text} qilishingiz kerak!`);
+  sendSysNotif(`📋 Vazifa vaqti keldi!`, `${user}, hozir: ${t.text}`);
+}
+
+function checkPrayerReminders(now){
+  const ds=fmtDate(now);
+  const ct=`${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  const times=getPT(now);
+  times.forEach((t,i)=>{
+    const key=`pr-${i}-${ds}-${t}`;
+    if(t===ct&&!shownPrayerAlarms[key]){
+      shownPrayerAlarms[key]=true;
+      startSound(440, 'sine');
+      speakTTS(`Azon vaqti bo'ldi. ${PN[i]} namozi kirdi.`);
+      sendSysNotif(`🕌 ${PN[i]} namozi vaqti!`, `Toshkentda ${PN[i]} namozi vaqti bo'ldi.`);
+    }
+  });
+}
+
+function stopTaskRing(){
+  document.getElementById('taskring').style.display='none';
+  stopSound();
+}
+window.stopTaskRing=stopTaskRing;
+
+function stopAlarm(){
+  document.getElementById('aring').classList.remove('on');
+  stopSound();
+}
+
+function startSound(freq, type){
+  try{
+    stopSound();
+    taskAlarmCtx=new(window.AudioContext||window.webkitAudioContext)();
+    playBell(freq, type);
+  }catch(e){}
+}
+function playBell(freq, type){
+  if(!taskAlarmCtx)return;
+  let t=taskAlarmCtx.currentTime;
+  for(let i=0; i<3; i++){
+    const o=taskAlarmCtx.createOscillator();
+    const g=taskAlarmCtx.createGain();
+    o.connect(g);g.connect(taskAlarmCtx.destination);
+    o.frequency.value=freq; o.type=type;
+    g.gain.setValueAtTime(0.3,t);
+    g.gain.exponentialRampToValueAtTime(0.001,t+0.4);
+    o.start(t);o.stop(t+0.4);
+    t+=0.5;
+  }
+  taskAlarmTimer=setTimeout(()=>playBell(freq, type), 3000);
+}
+function stopSound(){
+  clearTimeout(taskAlarmTimer);
+  if(taskAlarmCtx){try{taskAlarmCtx.close();}catch(e){}taskAlarmCtx=null;}
+}
+
+function speakTTS(text){
+  if('speechSynthesis' in window){
+    window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='tr-TR';
+    u.rate=0.9;
+    window.speechSynthesis.speak(u);
+  }
+}
+
+function checkEveningReminder(now){
+  if(now.getHours()===20&&now.getMinutes()===0){
+    const key='ev-'+fmtDate(now);
+    if(localStorage.getItem('fl_evkey')!==key){
+      localStorage.setItem('fl_evkey',key);
+      const pending=getByDate(fmtDate(now)).filter(t=>!t.done);
+      if(pending.length) sendSysNotif('📋 Kechki eslatma', `Bugun ${pending.length} ta vazifangiz bajarilmay qoldi.`);
+    }
+  }
+}
+
+// ── BROWSER NOTIFICATIONS ──
+window.grantPerm=async function(){
+  document.getElementById('permprompt').style.display='none';
+  if('Notification' in window){
+    const perm=await Notification.requestPermission();
+    if(perm==='granted'){
+      registerSW();
+      showNotif('🔔', 'Bildirishnomalar faollashtirildi!');
+    }
+  }
+};
+window.denyPerm=function(){
+  document.getElementById('permprompt').style.display='none';
+  localStorage.setItem('fl_permdeny','1');
+};
+
+function showNotif(icon,text){
+  document.getElementById('nico').textContent=icon;
+  document.getElementById('ntxt').textContent=text;
+  document.getElementById('nbar').classList.add('show');
+  setTimeout(hideNotif,4000);
+}
+function hideNotif(){document.getElementById('nbar').classList.remove('show');}
+
+function sendSysNotif(title,body){
+  if(typeof Notification!=='undefined'&&Notification.permission=='granted'){
+    try{
+      navigator.serviceWorker.ready.then(reg=>{
+        reg.showNotification(title,{body,requireInteraction:true});
+      });
+    }catch(e){
+      new Notification(title,{body});
+    }
+  }
+}
+
+// ── REAL SW FAILI BILAN BOG'LASH ──
+function registerSW(){
+  if (!('serviceWorker' in navigator)) return;
+  navigator.serviceWorker.register('sw.js', {scope: './'}).then(()=>{
+    setTimeout(sendTasksToSW,1000);
+  }).catch(e=>console.log(e));
+}
+
+function sendTasksToSW(){
+  if(navigator.serviceWorker.controller){
+    navigator.serviceWorker.controller.postMessage({
+      type:'SYNC',
+      tasks,
+      user,
+      alarm
+    });
+  }
+}
+})();
+</script>
+</body>
+</html>
